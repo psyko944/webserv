@@ -10,7 +10,6 @@ server::~server(){
 
 void server::init(){
 
-    // socket.init_listener_socket();
 
 }
 int server::get_serv_fd() const
