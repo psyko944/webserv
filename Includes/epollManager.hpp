@@ -1,18 +1,26 @@
 #pragma once
 
+#include <sys/epoll.h>
+#include <exception>
+#include <stdexcept>
+#include <string.h>
+#include <iostream>
+
+#define MAX_EVENTS 1000
+
 class epollManager
 {
 private:
-    /* data */
+    int _epoll_fd;
+
 public:
-    epollManager(/* args */);
+    int num_events;
+    struct epoll_event ev;
+    struct epoll_event events[MAX_EVENTS];
+    epollManager();
     ~epollManager();
+    void init(int fd);
+    void add_fd(int fd);
+    void del_fd(int fd);
+    void waitingForEvents();
 };
-
-epollManager::epollManager(/* args */)
-{
-}
-
-epollManager::~epollManager()
-{
-}

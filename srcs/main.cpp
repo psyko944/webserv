@@ -6,6 +6,7 @@ int main()
     try
     {
         server server;
+        server.start();
     }
     catch (const std::exception &e)
     {

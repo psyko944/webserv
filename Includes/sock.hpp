@@ -2,6 +2,7 @@
 
 #include <arpa/inet.h>
 #include <sys/socket.h>
+#include <sys/types.h>        
 #include <netinet/tcp.h>
 #include <iostream>
 #include <string.h>
@@ -21,4 +22,5 @@ public:
     ~sock();
     int get_fd() const;
     void init_listener_socket();
+    void accept_client(int serv_fd);
 };

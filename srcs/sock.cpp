@@ -1,6 +1,6 @@
 #include "sock.hpp"
 
-sock::sock() : _fd(0)
+sock::sock() : _fd(-1)
 {
     memset(&addr, 0, sizeof(addr));
     _len = sizeof(addr);
@@ -8,14 +8,16 @@ sock::sock() : _fd(0)
 
 sock::~sock()
 {
-    if (_fd > 0)
-    {
-        close(_fd);
-    }
+   
 }
+
+int sock::get_fd() const
+{
+    return _fd;
+}
+
 void sock::init_listener_socket()
 {
-    std::cout << "on entre" << std::endl;
     int opt = 1;
     addr.sin_family = AF_INET;
     addr.sin_addr.s_addr = INADDR_ANY;
@@ -30,7 +32,11 @@ void sock::init_listener_socket()
         throw std::runtime_error("listen socket failed");
     fcntl(_fd, F_SETFL, O_NONBLOCK);
 }
-int sock::get_fd() const
+
+void sock::accept_client(int serv_fd)
 {
-    return _fd;
+    _fd = accept(serv_fd, (struct sockaddr *)&addr, &_len);
+    if (_fd < 0)
+        throw std::runtime_error("accept error");
+    fcntl(_fd, F_SETFL, O_NONBLOCK);
 }

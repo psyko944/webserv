@@ -198,6 +198,7 @@ int main()
     {
         struct sockaddr_in client_addr;
         socklen_t client_len = sizeof(client_addr);
+        //---------------------------
         int num_events = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);
         if (num_events == -1)
         {
@@ -208,7 +209,7 @@ int main()
         {
             if (events[i].events & EPOLLHUP )
             {
-                printf("Client déconnecté (Keep-Alive timeout détecté par EPOLLHUP)\n");
+                printf("Client déconnecté \n");
                 epoll_ctl(epoll_fd, EPOLL_CTL_DEL, events[i].data.fd, NULL);
                 close(events[i].data.fd);
                 continue;
