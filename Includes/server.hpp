@@ -2,14 +2,17 @@
 
 #include "sock.hpp"
 #include "epollManager.hpp"
+#include "client.hpp"
 #include <iostream>
+#include <vector>
+
 
 
 class server
 {
 private:
-    sock socket;
-    epollManager epollMgr;
+    sock _socket;
+    epollManager _epollMgr;
 
 public:
     server();

@@ -77,7 +77,7 @@ bool print_request(struct epoll_event *event)
 
 server::server()
 {
-    socket.init_listener_socket();
+    _socket.init_listener_socket();
 }
 
 server::~server()
@@ -86,64 +86,55 @@ server::~server()
 
 int server::get_serv_fd() const
 {
-    return (socket.get_fd());
+    return (_socket.get_fd());
 }
 
 void server::start()
 {
-    epollMgr.init(get_serv_fd());
-   
-    int i = 0;
+    _epollMgr.init(get_serv_fd());
+
     while (1)
     {
-        std::cout << "i = " << i << std::endl;
-        epollMgr.waitingForEvents();
-        
-        std::cout << " nbr event = " << epollMgr.num_events << std::endl;
-        for (int i = 0; i < epollMgr.num_events; i++)
+        _epollMgr.waitingForEvents();
+
+        for (int i = 0; i < _epollMgr.num_events; i++)
         {
 
-            if (epollMgr.events[i].events & EPOLLHUP)
+            if (_epollMgr.events[i].events & EPOLLHUP)
             {
-                std::cout << " on entre " << std::endl;
-                epollMgr.del_fd(epollMgr.events[i].data.fd);
+                _epollMgr.del_fd(_epollMgr.events[i].data.fd);
                 // close la socket;
                 continue;
             }
-            else if (epollMgr.events[i].data.fd == get_serv_fd())
+            else if (_epollMgr.events[i].data.fd == get_serv_fd())
             {
                 sock socket_client;
-                // try
-                // {
+                try
+                {
 
-                    // std::cout << "on rentre" << std::endl;
-                    // std::cout << "fd socket client = " << socket.get_fd() << std::endl;
                     socket_client.accept_client(get_serv_fd());
-                    // std::cout << "fd socket client apres = " << socket.get_fd() << std::endl;
-                // }
-                // catch (const std::exception &e)
-                // {
-                //     std::cerr << e.what() << std::endl;
-                //     continue;
-                // }
-                // try
-                // {
-                    std::cout << "on rentre dans le 2 eme try" << std::endl;
-                    epollMgr.add_fd(socket_client.get_fd());
-                // }
-                // catch (const std::exception &e)
-                // {
-                //     std::cerr << e.what() << std::endl;
-                // }
+                }
+                catch (const std::exception &e)
+                {
+                    std::cerr << e.what() << std::endl;
+                    continue;
+                }
+                try
+                {
+
+                    _epollMgr.add_fd(socket_client.get_fd());
+                }
+                catch (const std::exception &e)
+                {
+                    std::cerr << e.what() << std::endl;
+                }
             }
             else
             {
-                std::cout << " on rentre dans le ELSE " << std::endl;
-                print_request(&epollMgr.events[i]);
-                send_file_response(epollMgr.events[i].data.fd, "HTML/acceuil.html");
+
+                print_request(&_epollMgr.events[i]);
+                send_file_response(_epollMgr.events[i].data.fd, "HTML/acceuil.html");
             }
-           
         }
-        i++;
     }
 }
