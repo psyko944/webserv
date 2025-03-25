@@ -1,5 +1,0 @@
-lsof (List Open Files) :
-
-lsof -p <PID_du_processus_webserv>
-
-Remplace <PID_du_processus_webserv> par le PID de ton processus. Si tu ne connais pas le PID, tu peux le trouver avec la commande ps aux | grep webserv.
