@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <fstream>
 #include <sstream>
+#include <request.hpp>
 
 //------------------------------------------------------------
 void send_file_response(int client_fd, const std::string &file_path)
@@ -77,7 +78,7 @@ bool server::print_request(struct epoll_event *event)
 
 server::server()
 {
-    _socket.init_listener_socket();
+    _socket.init_listener_socket(8080);
 }
 
 server::~server()
@@ -136,12 +137,14 @@ void server::start()
             }
             else
             {
+                Request r(_epollMgr.events[i].data.fd);
+                r.send(_epollMgr.events[i].data.fd);
+                // print_request(&_epollMgr.events[i]);
+                // send_file_response(_epollMgr.events[i].data.fd, "HTML/acceuil.html");
+                // std::cout << std::string(10, '-') << std::endl;
+                // print_clients();
+                // std::cout << std::string(10, '-') << std::endl;
 
-                print_request(&_epollMgr.events[i]);
-                send_file_response(_epollMgr.events[i].data.fd, "HTML/acceuil.html");
-                std::cout << std::string(10, '-') << std::endl;
-                print_clients();
-                std::cout << std::string(10, '-') << std::endl;
             }
         }
     }

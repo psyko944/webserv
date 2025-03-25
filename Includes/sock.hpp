@@ -21,6 +21,6 @@ public:
     sock();
     ~sock();
     int get_fd() const;
-    void init_listener_socket();
+    void init_listener_socket(int port);
     void accept_client(int serv_fd);
 };

@@ -17,12 +17,12 @@ int sock::get_fd() const
     return _fd;
 }
 
-void sock::init_listener_socket()
+void sock::init_listener_socket(int port)
 {
     int opt = 1;
     addr.sin_family = AF_INET;
     addr.sin_addr.s_addr = INADDR_ANY;
-    addr.sin_port = htons(8080);
+    addr.sin_port = htons(port);
 
     if ((_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
         throw std::runtime_error("socket failed");

@@ -10,7 +10,7 @@ OBJDIR 			= ./obj/
 
 DEPDIR 			= ./dep/
 
-SRCName			= main.cpp server.cpp sock.cpp epollManager.cpp client.cpp
+SRCName			= main.cpp server.cpp sock.cpp epollManager.cpp client.cpp delete.cpp errcodes.cpp get.cpp mime.cpp post.cpp requests.cpp utils.cpp
 
 SRCS = $(addprefix $(SRCPATH), $(SRCName))
 
