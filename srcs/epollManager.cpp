@@ -21,7 +21,6 @@ void epollManager::init(int fd)
 
 void epollManager::add_fd(int fd)
 {
-    std::cout << "FD = " << fd << std::endl;
     ev.events = EPOLLIN | EPOLLET | EPOLLHUP;
     ev.data.fd = fd;
     if (epoll_ctl(_epoll_fd, EPOLL_CTL_ADD, fd, &ev) < 0)

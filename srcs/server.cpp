@@ -108,11 +108,10 @@ void server::start()
             }
             else if (_epollMgr.events[i].data.fd == get_serv_fd())
             {
-                sock socket_client;
+                client *clt = NULL;
                 try
                 {
-
-                    socket_client.accept_client(get_serv_fd());
+                    clt = new client(get_serv_fd());
                 }
                 catch (const std::exception &e)
                 {
@@ -121,8 +120,7 @@ void server::start()
                 }
                 try
                 {
-
-                    _epollMgr.add_fd(socket_client.get_fd());
+                    _epollMgr.add_fd(clt->get_client_fd());
                 }
                 catch (const std::exception &e)
                 {

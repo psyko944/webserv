@@ -8,7 +8,8 @@ sock::sock() : _fd(-1)
 
 sock::~sock()
 {
-   
+   if (_fd > 0)
+    close(_fd);
 }
 
 int sock::get_fd() const
