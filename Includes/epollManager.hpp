@@ -6,7 +6,7 @@
 #include <string.h>
 #include <iostream>
 
-#define MAX_EVENTS 1000
+#define MAX_EVENTS 1024
 
 class epollManager
 {

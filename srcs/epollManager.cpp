@@ -34,7 +34,7 @@ void epollManager::del_fd(int fd)
 
 void epollManager::waitingForEvents()
 {
-    num_events = epoll_wait(_epoll_fd, events, MAX_EVENTS, -1);
+    num_events = epoll_wait(_epoll_fd, events, MAX_EVENTS, 5000);
     if (num_events < 0)
         throw std::runtime_error("epoll wait failed");
 }

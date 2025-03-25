@@ -17,3 +17,7 @@ int client::get_client_fd() const
 {
     return _socket.get_fd();
 }
+int client::get_time_of_last_request() const
+{
+    return _time_of_last_request;
+}

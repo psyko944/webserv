@@ -47,7 +47,7 @@ void send_file_response(int client_fd, const std::string &file_path)
     send(client_fd, full_response.c_str(), full_response.size(), 0);
 }
 
-bool print_request(struct epoll_event *event)
+bool server::print_request(struct epoll_event *event)
 {
     char buffer[1024];                                                            // Tampon pour stocker la requête du client
     ssize_t bytes_received = recv(event->data.fd, buffer, sizeof(buffer) - 1, 0); // Lire les données du client
@@ -56,7 +56,7 @@ bool print_request(struct epoll_event *event)
     {
         if (bytes_received == 0)
         {
-            // Le client a fermé la connexion
+            delete_client(event->data.fd);
             printf("Client déconnecté123\n");
         }
         else
@@ -97,13 +97,19 @@ void server::start()
     {
         _epollMgr.waitingForEvents();
 
+        if (_epollMgr.num_events == 0)
+        {
+            std::cout << "NO EVENT" << std::endl;
+            print_clients();
+            continue;
+        }
+
         for (int i = 0; i < _epollMgr.num_events; i++)
         {
 
             if (_epollMgr.events[i].events & EPOLLHUP)
             {
-                _epollMgr.del_fd(_epollMgr.events[i].data.fd);
-                // close la socket;
+                delete_client(_epollMgr.events[i].data.fd);
                 continue;
             }
             else if (_epollMgr.events[i].data.fd == get_serv_fd())
@@ -121,6 +127,7 @@ void server::start()
                 try
                 {
                     _epollMgr.add_fd(clt->get_client_fd());
+                    clients[clt->get_client_fd()] = clt;
                 }
                 catch (const std::exception &e)
                 {
@@ -132,7 +139,34 @@ void server::start()
 
                 print_request(&_epollMgr.events[i]);
                 send_file_response(_epollMgr.events[i].data.fd, "HTML/acceuil.html");
+                std::cout << std::string(10, '-') << std::endl;
+                print_clients();
+                std::cout << std::string(10, '-') << std::endl;
             }
         }
+    }
+}
+
+//-----------------------------------------------------------
+void server::print_clients()
+{
+    for (std::map<int, client *>::iterator it = clients.begin(); it != clients.end(); ++it)
+    {
+        std::cout << "Client FD: " << it->first << std::endl;
+        std::cout << "Time of last request: " << it->second->get_time_of_last_request() << std::endl;
+    }
+}
+
+void server::delete_client(int fd)
+{
+   
+    std::map<int, client *>::iterator it = clients.find(fd);
+
+   
+    if (it != clients.end())
+    {
+        _epollMgr.del_fd(fd);
+        delete it->second; 
+        clients.erase(it);
     }
 }

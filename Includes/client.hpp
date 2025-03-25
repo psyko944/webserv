@@ -12,6 +12,7 @@ public:
     client(int serv_fd);
     ~client();
     int get_client_fd() const;
+    int get_time_of_last_request() const;
 };
 
 
