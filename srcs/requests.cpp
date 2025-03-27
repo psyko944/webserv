@@ -4,10 +4,11 @@
 #include <fstream>
 #include <unistd.h>
 #include <sstream>
-//------------------------
-#include <sys/types.h> // Pour pid_t
-#include <sys/wait.h>  // Pour waitpid()
+//-------------------------
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <string.h>
+#include "cgiManager.hpp"
 
 void Request::notImplemented()
 {
@@ -59,14 +60,14 @@ void Request::generateResponse()
 
 void Request::send(int fd)
 {
-	std::cout << " PATH = " << _path << std::endl;
-	if (_path == "/cgi.py")
+	std::cout << "PATH = " << _path << std::endl;
+	if (_path == "/scripts/cgi.py")
 	{
-		std::cout << "COUCOU CA FONCTIONNE" << std::endl;
-		executeCGI(_path);
+		cgiManager cgi(_path, test_fd);
+		cgi.execute();
+		// executeCGI(_path);
 		return;
 	}
-	std::cout << "CA RETURN PAS !!!!!!!!!!!!!" << std::endl;
 	// std::cerr << "Handling a request :)" << std::endl;
 	generateResponse();
 	std::cout << _responseHeader << std::endl;
@@ -86,9 +87,7 @@ void Request::getRessourcePath()
 
 void Request::executeCGI(const std::string &scriptPath)
 {
-	std::cout << "ON ENTRE DANS LE CGI" << std::endl;
 	std::string new_path = "pages" + scriptPath;
-	std::cout << "PATH du CGI = " << new_path << std::endl;
 	int pipefd[2];
 	if (pipe(pipefd) == -1)
 	{
@@ -98,19 +97,8 @@ void Request::executeCGI(const std::string &scriptPath)
 
 	int pid = fork();
 	if (pid == 0)
-	{				
-		
-		
-		
-		
-		dup2(pipefd[1], STDOUT_FILENO);
-		dup2(pipefd[0],STDIN_FILENO); // Redirige stdout vers le pipe
-		// Processus enfant
-		close(pipefd[0]);				// Ferme la lecture du pipe
-		close(pipefd[1]);				// Ferme le descripteur inutilisé
-
-		// Prépare l'argument pour execve
-		char *const args[] = {(char *)scriptPath.c_str(), NULL};
+	{
+		char *const args[] = {(char *)new_path.c_str(), NULL};
 
 		// Prépare les variables d'environnement
 		char *const env[] = {
@@ -120,6 +108,17 @@ void Request::executeCGI(const std::string &scriptPath)
 			(char *)"CONTENT_LENGTH=0",
 			NULL};
 
+		std::cout << " path dans class cgi = " << new_path << std::endl;
+		std::cout << " path dans args[0] = " << args[0] << std::endl;
+
+		dup2(pipefd[1], STDOUT_FILENO);
+		dup2(pipefd[0], STDIN_FILENO); // Redirige stdout vers le pipe
+		// Processus enfant
+		close(pipefd[0]); // Ferme la lecture du pipe
+		close(pipefd[1]); // Ferme le descripteur inutilisé
+
+		// Prépare l'argument pour execve
+		
 		if (execve(new_path.c_str(), args, env) == -1)
 		{
 			perror("execve failed");
@@ -128,26 +127,22 @@ void Request::executeCGI(const std::string &scriptPath)
 	}
 	else if (pid > 0)
 	{
-		close(pipefd[1]); 
+		close(pipefd[1]);
 		std::string output;
 		char buffer[1024];
 		ssize_t bytesRead;
-		waitpid(pid, NULL, 0); 
+		waitpid(pid, NULL, 0);
 
 		while ((bytesRead = read(pipefd[0], buffer, sizeof(buffer) - 1)) > 0)
 		{
 			buffer[bytesRead] = '\0';
-			output.append(buffer, bytesRead); 
+			output.append(buffer, bytesRead);
 		}
 
 		close(pipefd[0]);
 
-		std::cout << "----------- SORTIE CGI -----------" << std::endl;
-		std::cout << output << std::endl; 
-		std::cout << "----------------------------------" << std::endl;
 		if (!output.empty())
 		{
-			std::cout << "ON VA SEND" << std::endl;
 			::send(test_fd, output.c_str(), output.size(), 0);
 		}
 		else
@@ -155,9 +150,4 @@ void Request::executeCGI(const std::string &scriptPath)
 			std::cerr << "Erreur : Aucune sortie du CGI" << std::endl;
 		}
 	}
-	else
-	{
-		perror("fork failed");
-	}
-	std::cout << "ON SORT DE L EXEC" << std::endl;
 }
