@@ -51,6 +51,7 @@ void Request::getReq()
 	getRessourcePath();
 	_errcode = getBody(_path, _responseBody);
 
+
 	_responseHeader = "HTTP/1.1 " + Utils::itos(_errcode) + ' ' + get_errcode_string(_errcode) + "\r\n";
 	_responseHeader += "Server: Webserv\r\n"; // Config file dependent
 	_responseHeader += Utils::time_string();

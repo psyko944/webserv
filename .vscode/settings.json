@@ -66,6 +66,7 @@
         "thread": "cpp",
         "typeinfo": "cpp",
         "semaphore": "cpp",
-        "map": "cpp"
+        "map": "cpp",
+        "cinttypes": "cpp"
     }
 }

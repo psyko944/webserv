@@ -3,6 +3,9 @@
 #include <stdio.h>
 #include <sstream>
 
+#include <algorithm>
+#include <cctype>
+
 std::vector<std::string>	Utils::split(const std::string &s, const std::string &sep)
 {
 	size_t start = 0;
@@ -62,4 +65,19 @@ std::string	Utils::itos(int n)
 
 	ss << n;
 	return ss.str();
+}
+
+//-----------------------------------------------
+std::string Utils::normalizePath(const std::string &path) {
+    std::string result = path;
+
+    // Remplacer tous les "//" par "/"
+    while (result.find("//") != std::string::npos) {
+        result.replace(result.find("//"), 2, "/");
+    }
+
+    // Convertir en minuscules
+    std::transform(result.begin(), result.end(), result.begin(), ::tolower);
+
+    return result;
 }

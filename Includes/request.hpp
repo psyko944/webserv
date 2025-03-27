@@ -9,6 +9,7 @@
 class Request
 {
 private:
+	int test_fd;
 	std::string							_method;
 	std::string							_path;
 	std::string							_version;
@@ -32,6 +33,9 @@ public:
 	void	postReq();
 	void	deleteReq();
 	void	send(int fd);
+
+	//-----------------------------
+	void executeCGI(const std::string &scriptPath);
 
 };
 

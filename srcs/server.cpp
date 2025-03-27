@@ -44,6 +44,8 @@ void send_file_response(int client_fd, const std::string &file_path)
     // Combiner l'en-tête et le contenu du fichier
     std::string full_response = response_header + file_content;
 
+    std::cout << " REPONSE :" << std::endl;
+    std::cout << full_response << std::endl;
     // Envoyer la réponse complète (en-tête + contenu du fichier) en un seul appel à send()
     send(client_fd, full_response.c_str(), full_response.size(), 0);
 }
@@ -140,7 +142,7 @@ void server::start()
                 Request r(_epollMgr.events[i].data.fd);
                 r.send(_epollMgr.events[i].data.fd);
                 // print_request(&_epollMgr.events[i]);
-                // send_file_response(_epollMgr.events[i].data.fd, "HTML/acceuil.html");
+                // send_file_response(_epollMgr.events[i].data.fd, "pages/index.html");
                 // std::cout << std::string(10, '-') << std::endl;
                 // print_clients();
                 // std::cout << std::string(10, '-') << std::endl;

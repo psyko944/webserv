@@ -40,4 +40,5 @@ void sock::accept_client(int serv_fd)
     if (_fd < 0)
         throw std::runtime_error("accept error");
     fcntl(_fd, F_SETFL, O_NONBLOCK);
+    fcntl(_fd, F_SETFD, FD_CLOEXEC);
 }
