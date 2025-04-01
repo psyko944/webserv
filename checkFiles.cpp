@@ -7,9 +7,9 @@ bool	isValidFormat(const std::string &filename) {
 	struct stat file_stat;
 	if (stat(filename.c_str(), &file_stat))
 		return false;
-	// if (file_stat.st_mode & S_IFREG)
-	// 	return false;
 	if (file_stat.st_mode & S_IFDIR)
+		return false;
+	if (file_stat.st_size == 0)
 		return false;
 	return true;
 }

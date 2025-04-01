@@ -197,7 +197,6 @@ void	Configuration::parsePorts(const std::string &line, Server &server)
 		else
 			server.addPorts(*it);
 	}
-	std::cout << "host = " << host << "\t"<< server.getHostAddress() << '\n';
 }
 
 
@@ -364,7 +363,6 @@ bool	Configuration::chooseDirectives(const std::string &lineWithSemicolon, Serve
 bool	Configuration::chooseLocationDirectives(const std::string &lineWithSemicolon)
 {
 	std::string line = lineWithSemicolon.substr(0, lineWithSemicolon.size()-1);
-	std::cout << "uri location: "<< currentLocation.uri << "\tline = " << line << '\n';
 	std::vector<std::string> lineSplited = split(skipWord(line));
 	std::string firstWord = getFirstWord(line);
 	if (firstWord == "root")
@@ -508,18 +506,19 @@ void	Configuration::parseFile(const std::string &filename)
 		throw std::runtime_error("Error: Failed to open file: " + filename + '\n');
 	if (infile.good())
 	{
-		while (infile.good())
+		while (infile.good() && !infile.eof())
 		{
 			try
 			{
 					if (!handleToken(readNextWord(infile))){
 						throw std::runtime_error("Error: parsing file: " + line + '\n');
 					}
-					std::cout << MAGENTA << "loop properly\n" << RESET;
+					// std::cout << MAGENTA << "loop properly\n" << RESET;
 			}
 			catch(const std::exception& e)
 			{
 				std::cerr << SUPA_RED <<  e.what() << "\t line ["<< lineNbr <<"]\n\n" << RESET;
+				infile.close();
 				return ;
 			}
 		}

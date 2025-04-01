@@ -115,7 +115,7 @@ void webServer::start()
 		setupServers();
 		while (g_loop)
 		{
-			nfds = epoll_wait(epfd, events, MAX_EVENTS, 100);
+			nfds = epoll_wait(epfd, events, MAX_EVENTS, -1);
 			std::cerr << GREEN << "WebServer wait an event\n" << RESET;
 			if (nfds == -1)
 			{
